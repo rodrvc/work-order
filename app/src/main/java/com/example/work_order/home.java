@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.FirebaseApp;
@@ -26,7 +28,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class home extends AppCompatActivity  {
+public class home extends AppCompatActivity implements MyHome.RecyListener {
     private TextView tx;
     RecyclerView recycler;
     myAdapter adapter;
@@ -81,10 +83,10 @@ public class home extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                cambioForm();
-                //
             }
 
         });
+
 
         listarDatos();
     }
@@ -96,25 +98,29 @@ public class home extends AppCompatActivity  {
                 O.clear();
                 for (DataSnapshot ob : dataSnapshot.getChildren()){
                     OrdenDeTrabajo ot = ob.getValue(OrdenDeTrabajo.class);
-                    O.add(ot);
+
+                        O.add(ot);
 
 
-                    adapter = new myAdapter(home.this, O);
+
+
+
+
+
+                    adapter = new myAdapter(home.this, O , home.this );
+                    //recycler.setVisibility(O.size() == 0 ? View.VISIBLE : View.GONE);
+
+
 
 
                     recycler.setAdapter(adapter);
 
-                    adapter.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            O.get(recycler.getChildAdapterPosition(view)).getUid();
-                            
 
 
-                        }
-                    });
-                    //recycler.setVisibility(O.size() == 0 ? View.VISIBLE : View.GONE);
+
                     adapter.notifyDataSetChanged();
+
+
 
                 }
             }
@@ -206,6 +212,23 @@ public class home extends AppCompatActivity  {
         return description;
     }
 
+
+    @Override
+    public void recyClick(int position) {
+
+        OrdenDeTrabajo order = O.get(position);
+
+        databaseReference.child("OT").child(order.getUid()).removeValue();
+        O.remove(position);
+
+
+
+        adapter.notifyItemRemoved(position);
+        adapter.notifyDataSetChanged();
+        adapter.notifyItemRangeChanged(position, O.size());
+        Toast.makeText(this, "Eliminado dato" , Toast.LENGTH_LONG).show();
+
+    }
 
 
 

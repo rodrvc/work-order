@@ -17,19 +17,22 @@ import java.util.ArrayList;
 
 import static com.example.work_order.R.layout.card;
 
-public class myAdapter extends RecyclerView.Adapter<MyHome> implements View.OnClickListener {
+public class myAdapter extends RecyclerView.Adapter<MyHome> {
 
     Context c;
     ArrayList<OrdenDeTrabajo> order;
     private View.OnClickListener listener;
+    private MyHome.RecyListener recyListener;
 
 
 
 
 
-    public myAdapter(Context c, ArrayList<OrdenDeTrabajo> order) {
+    public myAdapter(Context c, ArrayList<OrdenDeTrabajo> order , MyHome.RecyListener recyListener) {
         this.c = c;
         this.order = order;
+        this.recyListener = recyListener;
+
     }
 
     @NonNull
@@ -37,16 +40,14 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> implements View.OnCl
     public MyHome onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(card, parent , false); //
         // this
-        view.setOnClickListener(this);
-        return new MyHome(view);
+
+        return new MyHome(view, recyListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyHome holder, int position) {
-
         holder.CTitle.setText(order.get(position).getTitle());
         holder.CDescripcion.setText(order.get(position).getDescription());
-
     }
 
     @Override
@@ -58,11 +59,11 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> implements View.OnCl
         this.listener = listener ;
     }
 
-    @Override
-    public void onClick(View view) {
-        if (listener!=null){
-            listener.onClick(view);
-        }
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
     }
 }
