@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Work order</string>
+    <string name="title_activity_test">test</string>
+    <string name="text_principal">Tareas</string>
+    <string name="card_text">Orden de trabajo 1</string>
+    <string name="card_description">Esto corresponde a la descripcion de la tarjeta</string>
+
+</resources>
