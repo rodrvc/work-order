@@ -41,7 +41,7 @@ public class Form extends AppCompatActivity {
         Intent homeIntent = new Intent(Form.this, home.class);
         homeIntent.putExtra("title",title);
         homeIntent.putExtra("description" , description);
-        startActivity(homeIntent);
+
         finish();
     }
 }
