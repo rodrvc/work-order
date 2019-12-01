@@ -24,6 +24,7 @@ public class Form extends AppCompatActivity {
         txtDescription = (TextInputEditText) findViewById(R.id.text_description);
         btnAgregarTarea = findViewById(R.id.button);
 
+        final Bundle bundle = new Bundle();
 
         btnAgregarTarea.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,12 +36,16 @@ public class Form extends AppCompatActivity {
     }
 
     public void aceptarTarea(){
+
+        Bundle bundle = new Bundle();
         String title = txtTitle.getText().toString();
         String description = txtDescription.getText().toString();
 
-        Intent homeIntent = new Intent(Form.this, home.class);
+        Intent homeIntent = new Intent( );
         homeIntent.putExtra("title",title);
         homeIntent.putExtra("description" , description);
+
+        setResult(RESULT_OK, homeIntent);
 
         finish();
     }

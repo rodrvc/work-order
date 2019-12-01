@@ -3,46 +3,92 @@ package com.example.work_order;
 import android.content.Context;
 import android.icu.text.CaseMap;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
+
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.card.MaterialCardView;
-
-import java.util.Objects;
 
 public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListener {
     TextView CTitle, CDescripcion;
+    ImageView CDelete;
+    Context c;
 
     RecyListener recyLister ;
+
+    private int lastPosition = -1;
+    private Context context;
 
     public MyHome( @NonNull View itemView , RecyListener recyLister ) {
         super(itemView);
 
-        CTitle = (TextView) itemView.findViewById(R.id.card_title);
+        CTitle = itemView.findViewById(R.id.card_title);
         CDescripcion = itemView.findViewById(R.id.card_description);
+        CDelete = itemView.findViewById(R.id.card_delete);
 
-        this.itemView.setPadding(1 , 1 , 10, 50);
+
+        //this.itemView.setPadding(1 , 1 , 10, 50);
         this.recyLister = recyLister;
+
+        CTitle.setOnClickListener(MyHome.this);
+        CDelete.setOnClickListener(MyHome.this);
         itemView.setOnClickListener(this);
 
+
+        setAnimation(this.itemView, getAdapterPosition());
 
 
     }
 
     @Override
     public void onClick(@NonNull View view) {
-        recyLister.recyClick(getAdapterPosition());
+        String accion = "";
+
+
+
+
+        //Log.i("hola","este es un desde log" );
+        switch (view.getId()){
+            case R.id.card_title:
+                Log.i("hola","Titulo" );
+                //home.O.remove(getAdapterPosition());
+                accion = "apretarTitulo";
+                break;
+            case R.id.card_delete:
+                accion = "borrarItem";
+                break;
+                default:
+                    accion = "EditItem";
+
+        }
+
+
+        recyLister.recyClick(getAdapterPosition(), accion);
+
+
+
 
     }
 
 
     public interface RecyListener {
-        void recyClick(int position);
+        void recyClick(int position , String a);
+    }
+
+    private void setAnimation(View viewToAnimate, int position)
+    {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition)
+        {
+            Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
+            viewToAnimate.startAnimation(animation);
+            lastPosition = position;
+        }
     }
 }

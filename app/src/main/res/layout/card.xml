@@ -46,5 +46,14 @@
         android:text="@string/card_description"
         android:textSize="@dimen/text_card_dimen_description" />
 
+    <ImageView
+        android:id="@+id/card_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+        android:layout_gravity="right"
+
+        />
+
 
 </com.google.android.material.card.MaterialCardView>

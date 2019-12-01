@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,7 +25,7 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
     ArrayList<OrdenDeTrabajo> order;
     private View.OnClickListener listener;
     private MyHome.RecyListener recyListener;
-
+    private int lastPosition = -1;
 
 
 
@@ -46,14 +48,28 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
 
     @Override
     public void onBindViewHolder(@NonNull MyHome holder, int position) {
+
         holder.CTitle.setText(order.get(position).getTitle());
         holder.CDescripcion.setText(order.get(position).getDescription());
+
+
     }
+
 
     @Override
     public int getItemCount() {
         return order.size();
     }
+
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+
+
+    }
+
+
 
     public void setOnClickListener(View.OnClickListener listener){
         this.listener = listener ;
