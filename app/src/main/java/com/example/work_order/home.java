@@ -9,14 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.dynamic.IFragmentWrapper;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -25,15 +21,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.FileReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.UUID;
 
-
 public class home extends AppCompatActivity implements MyHome.RecyListener {
     private TextView tx;
-
 
     RecyclerView recycler;
     myAdapter adapter;
@@ -51,8 +43,6 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        String title;
-        String descripcion;
         //components
         final FloatingActionButton fab = findViewById(R.id.fab);
         tx = (TextView) findViewById(R.id.textView);
@@ -82,8 +72,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         /*
      *****************************************************/
 
-
-        //boton fav .. abrir nueva activity
+        //boton fav
         fab.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -96,7 +85,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
     }
 
     private void listarDatos() {
-        databaseReference.child("OT").orderByChild("title").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("WK").orderByChild("title").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 O.clear();
@@ -119,7 +108,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         });
     }
 
-
+    //Abrir formulario para agregar
     private void cambioForm() {
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -130,57 +119,29 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
             }
         }, 500);
-
     }
+
 
     //Abrir formulario de modificacion
     private void cambioFormEdit(OrdenDeTrabajo o ) {
-        final String descriptionTareaEditar = o.getDescription();
-        final String tituloTareaEditar = o.getTitle();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        String descriptionTareaEditar = o.getDescription();
+        String tituloTareaEditar = o.getTitle();
+        String idEditar = o.getUid();
+        String prueba = "prueba de string ";
 
                 Intent homeIntent = new Intent(home.this, EditarTarea.class);
+                homeIntent.putExtra("titleEdit", tituloTareaEditar);
+                homeIntent.putExtra("descriptionEdit" , descriptionTareaEditar);
+                homeIntent.putExtra("idEdit" , idEditar);
                 startActivityForResult(homeIntent, 1);
-                homeIntent.putExtra("title", tituloTareaEditar);
-                homeIntent.putExtra("description" , descriptionTareaEditar);
-
-            }
-        }, 500);
-
     }
 
-
-
-    private void inicializarFirebase() {
+    private void inicializarFirebase(){
         FirebaseApp.initializeApp(this);
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
     }
 
-    private String recibirTitulo() {
-        String title = null;
-
-        //title = bundle.getString("title");
-        title = getIntent().getStringExtra("title");
-        //  String description = getIntent().getStringExtra("description");
-
-        return title;
-    }
-
-    private String recibirDescription() {
-
-        String description = null;
-
-
-        description = getIntent().getStringExtra("description");
-        //
-        //description= bundle.getString("description");
-
-        return description;
-    }
 
 
     @Override // encarga decibir el parametro click en el recyclerview
@@ -192,10 +153,8 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
             OrdenDeTrabajo order = O.get(position);
 
-            databaseReference.child("OT").child(order.getUid()).removeValue();
+            databaseReference.child("WK").child(order.getUid()).removeValue();
             O.remove(position);
-
-
             adapter.notifyItemRemoved(position);
             adapter.notifyDataSetChanged();
             adapter.notifyItemRangeChanged(position, O.size());
@@ -203,7 +162,6 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         } else if(accion == "EditItem"){
             OrdenDeTrabajo o = O.get(position);
             cambioFormEdit(o);
-
         }
     }
 
@@ -213,8 +171,13 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+
+
+
         String titulo = "";
         String description = "";
+        String id = "";
 
         if (resultCode == RESULT_OK && requestCode == 1) {
             if (data.hasExtra("title")) {
@@ -228,10 +191,17 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                         Toast.LENGTH_SHORT).show();
                 description = data.getExtras().getString("description");
             }
+            //si tiene id;
+            if (data.hasExtra("id")) {
+                Toast.makeText(this, data.getExtras().getString("id"),
+                        Toast.LENGTH_SHORT).show();
+                id = data.getExtras().getString("id");
+                comprobarModificar(titulo, description , id);
+                return;
+            }
         }
         comprobarAgregar(titulo, description);
     }
-
 
 
     //agrega tarea
@@ -243,13 +213,52 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                 ot.setTitle(titulo);
                 ot.setDescription(descripcion);
                 O.add(ot);
-                databaseReference.child("OT").child(ot.getUid()).setValue(ot);
+                databaseReference.child("WK").child(ot.getUid()).setValue(ot);
+            }
+        }
+    }
+
+    private void comprobarModificar(String titulo, String descripcion , String id) {
+
+        if (titulo != null || descripcion != null) {
+            if (titulo != "" || descripcion != "") {
+                ot.setUid(id);
+                ot.setTitle(titulo);
+                ot.setDescription(descripcion);
+
+                databaseReference.child("WK").child(ot.getUid()).setValue(ot);
+                adapter.notifyDataSetChanged();
             }
 
         }
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ///******BASURAAAAAAA
 
     private ArrayList<OrdenDeTrabajo> getCard() {
 
@@ -291,4 +300,27 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
         return trabajos;
     }
+
+    private String recibirTitulo() {
+        String title = null;
+
+        //title = bundle.getString("title");
+        title = getIntent().getStringExtra("title");
+        //  String description = getIntent().getStringExtra("description");
+
+        return title;
+    }
+
+    private String recibirDescription() {
+
+        String description = null;
+
+
+        description = getIntent().getStringExtra("description");
+        //
+        //description= bundle.getString("description");
+
+        return description;
+    }
+
 }
