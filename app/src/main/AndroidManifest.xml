@@ -15,8 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EditarTarea"></activity>
-        <activity android:name=".Form"></activity>
+        <activity android:name=".Singup"></activity>
+        <activity android:name=".EditarTarea" />
+        <activity android:name=".Form" />
         <activity android:name=".home" />
         <activity
             android:name=".MainActivity"

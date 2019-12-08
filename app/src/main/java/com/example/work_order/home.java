@@ -82,6 +82,8 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
         });
         listarDatos();
+
+
     }
 
     private void listarDatos() {
@@ -228,6 +230,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
                 databaseReference.child("WK").child(ot.getUid()).setValue(ot);
                 adapter.notifyDataSetChanged();
+                String hola = "hola";
             }
 
         }
