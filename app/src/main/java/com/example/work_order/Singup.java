@@ -2,6 +2,7 @@ package com.example.work_order;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import com.firebase.ui.auth.AuthUI;
@@ -9,18 +10,27 @@ import com.firebase.ui.auth.AuthUI;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,12 +39,14 @@ import java.util.List;
 public class Singup extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
+    FirebaseDatabase database;
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singup);
-
-
 
         createSignInIntent();
 
@@ -74,13 +86,96 @@ public class Singup extends AppCompatActivity {
 
 
             if (resultCode == RESULT_OK) {
+
+                final User usuario = new User();
                 // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestIdToken(getString(R.string.default_web_client_id))
+
                         .requestEmail()
                         .build();
+
+
+
+
+                //Obtener datos del usuario
+
+
+
+
+
+
+
+
+                    // Name, email address, and profile photo Url
+                    String name = user.getDisplayName();
+                    String email = user.getEmail();
+                    // Check if user's email is verified
+                    boolean emailVerified = user.isEmailVerified();
+                    // The user's ID, unique to the Firebase project. Do NOT use this value to
+                    // authenticate with your backend server, if you have one. Use
+                    // FirebaseUser.getIdToken() instead.
+                    final String uid = user.getUid();
+
+                    usuario.setUserId(uid);
+                    usuario.setNombre(name);
+                    usuario.setEmail(email);
+
+
+                    Intent intent = new Intent(getBaseContext(), home.class);
+                    intent.putExtra("name", name);
+                    intent.putExtra("email", email);
+                    intent.putExtra("uid", uid);
+
+
+
+
+
+
+
+                    startActivity(intent);
+
+
+
+
+                databaseReference.child("usuario")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(dataSnapshot == null){
+                                    // el nodo no tiene hijos
+                                    databaseReference.child("usuario").child(usuario.getUserId()).setValue(usuario);
+
+                                }else{
+                                    //hacer algo con el valor
+                                   
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                finish();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                 // ...

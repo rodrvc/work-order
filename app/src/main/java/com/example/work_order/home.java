@@ -3,18 +3,31 @@ package com.example.work_order;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.wifi.hotspot2.pps.HomeSp;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,12 +41,24 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
     private TextView tx;
 
     RecyclerView recycler;
+
+
     myAdapter adapter;
     public static ArrayList<OrdenDeTrabajo> O = new ArrayList<>();
 
     FirebaseDatabase database;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     DatabaseReference rf = databaseReference.child("texto");
+
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+    String idUsuario  = user.getUid();
+
+
+
+
+
+
 
 
     private static OrdenDeTrabajo ot = new OrdenDeTrabajo();
@@ -43,9 +68,18 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        //components
+        //INICIALIZACION DE COMPONENTES
         final FloatingActionButton fab = findViewById(R.id.fab);
-        tx = (TextView) findViewById(R.id.textView);
+        Toolbar toolbar =findViewById(R.id.Toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.colapsing);
+        collapsingToolbar.setExpandedTitleMargin(130, 640 , 100 ,100);
+
+        Toast.makeText(this , "esto es intent " + idUsuario , Toast.LENGTH_LONG).show();
+
+
 
         //iniciar firebase
         inicializarFirebase();
@@ -53,24 +87,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         recycler = findViewById(R.id.recycler);
         recycler.setLayoutManager(new LinearLayoutManager(this));
 
-        //************CODIGO DE PRUEBA OBSOLETO
-        // se trae los datos desde la activity Form
-    /*
-        title = ot.getTitle();
-        descripcion = ot.getDescription();
 
-        // Si los datos no son nulos se agregan a fire base
-        if (ot.getTitle() != null || ot.getDescription() != null) {
-            ot.setUid(UUID.randomUUID().toString());
-            ot.setTitle(title);
-            ot.setDescription(descripcion);
-            O.add(ot);
-            databaseReference.child("OT").child(ot.getUid()).setValue(ot);
-            ot = null;
-        }
-
-        /*
-     *****************************************************/
 
         //boton fav
         fab.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +101,31 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         listarDatos();
 
 
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_home, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.cerrar:
+                Toast.makeText(this ,"Cerrando Sesion " ,Toast.LENGTH_LONG).show();
+                signOut();
+                Intent SingIntent = new Intent(home.this, Singup.class);
+                startActivity(SingIntent);
+                finish();
+                return true;
+
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void listarDatos() {
@@ -232,9 +274,21 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                 adapter.notifyDataSetChanged();
                 String hola = "hola";
             }
-
         }
     }
+
+    public void signOut() {
+        // [START auth_fui_signout]
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                    }
+                });
+        // [END auth_fui_signout]
+    }
+
 
 
 
@@ -262,47 +316,6 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
 
     ///******BASURAAAAAAA
-
-    private ArrayList<OrdenDeTrabajo> getCard() {
-
-        ArrayList<OrdenDeTrabajo> trabajos = home.O;
-
-        OrdenDeTrabajo o = new OrdenDeTrabajo();
-        o.setTitle("Titulo");
-        o.setDescription("Descripcion");
-        trabajos.add(o);
-
-        OrdenDeTrabajo o1 = new OrdenDeTrabajo();
-        o1.setTitle("Titulo");
-        o1.setDescription("Descripcion1");
-        trabajos.add(o1);
-
-        OrdenDeTrabajo o2 = new OrdenDeTrabajo();
-        o2.setTitle("Titulo2");
-        o2.setDescription("Descripcion");
-        trabajos.add(o2);
-
-        o2.setTitle("Titulo2");
-        o2.setDescription("Descripcion");
-        trabajos.add(o2);
-
-        o2.setTitle("Titulo2");
-        o2.setDescription("Descripcion");
-        trabajos.add(o2);
-
-        o2.setTitle("Titulo2");
-        o2.setDescription("Descripcion");
-        trabajos.add(o2);
-        o2.setTitle("Titulo2");
-        o2.setDescription("Descripcion");
-        trabajos.add(o2);
-
-        o2.setTitle("Titulo2");
-        o2.setDescription("Descripcion");
-        trabajos.add(o2);
-
-        return trabajos;
-    }
 
     private String recibirTitulo() {
         String title = null;

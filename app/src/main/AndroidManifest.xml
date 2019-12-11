@@ -19,6 +19,8 @@
         <activity android:name=".EditarTarea" />
         <activity android:name=".Form" />
         <activity android:name=".home" />
+
+
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
