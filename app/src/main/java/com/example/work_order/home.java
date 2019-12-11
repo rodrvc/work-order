@@ -77,7 +77,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.colapsing);
         collapsingToolbar.setExpandedTitleMargin(130, 640 , 100 ,100);
 
-        Toast.makeText(this , "esto es intent " + idUsuario , Toast.LENGTH_LONG).show();
+
 
 
 
