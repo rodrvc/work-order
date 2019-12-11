@@ -129,7 +129,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
     }
 
     private void listarDatos() {
-        databaseReference.child("WK").orderByChild("title").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("WK").child(idUsuario).orderByChild("title").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 O.clear();
@@ -197,7 +197,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
             OrdenDeTrabajo order = O.get(position);
 
-            databaseReference.child("WK").child(order.getUid()).removeValue();
+            databaseReference.child("WK").child(idUsuario).child(order.getUid()).removeValue();
             O.remove(position);
             adapter.notifyItemRemoved(position);
             adapter.notifyDataSetChanged();
@@ -257,7 +257,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                 ot.setTitle(titulo);
                 ot.setDescription(descripcion);
                 O.add(ot);
-                databaseReference.child("WK").child(ot.getUid()).setValue(ot);
+                databaseReference.child("WK").child(idUsuario).child(ot.getUid()).setValue(ot);
             }
         }
     }
@@ -270,7 +270,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                 ot.setTitle(titulo);
                 ot.setDescription(descripcion);
 
-                databaseReference.child("WK").child(ot.getUid()).setValue(ot);
+                databaseReference.child("WK").child(idUsuario).child(ot.getUid()).setValue(ot);
                 adapter.notifyDataSetChanged();
                 String hola = "hola";
             }
