@@ -73,9 +73,14 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         Toolbar toolbar =findViewById(R.id.Toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setTitle("WorkOrder");
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.colapsing);
         collapsingToolbar.setExpandedTitleMargin(130, 640 , 100 ,100);
+        collapsingToolbar.setTitleEnabled(true);
+
+        collapsingToolbar.setTitle("Title");
 
 
 

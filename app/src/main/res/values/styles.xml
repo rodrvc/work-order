@@ -24,13 +24,10 @@
 
     </style>
 
-    <style name="Toolbar" parent="Widget.AppCompat.Toolbar" >
-        <item name="android:title"></item>
 
-    </style>
-    <style name="titleToolbar" parent="Widget.AppCompat.Toolbar" >
-        <item name="titleTextAppearance"></item>
-
+    <style name="PrimaryButton" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="colorControlHighlight">@color/colorBlanco</item>
     </style>
 
 

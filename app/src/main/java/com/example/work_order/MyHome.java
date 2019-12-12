@@ -1,6 +1,7 @@
 package com.example.work_order;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.icu.text.CaseMap;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,9 +17,12 @@ import androidx.annotation.NonNull;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.dynamic.IFragmentWrapper;
+
 public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListener {
     TextView CTitle, CDescripcion;
     ImageView CDelete;
+    Button CButton;
     Context c;
 
     RecyListener recyLister ;
@@ -31,6 +36,7 @@ public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListe
         CTitle = itemView.findViewById(R.id.card_title);
         CDescripcion = itemView.findViewById(R.id.card_description);
         CDelete = itemView.findViewById(R.id.card_delete);
+        CButton = itemView.findViewById(R.id.ButtonEstado);
 
 
         //this.itemView.setPadding(1 , 1 , 10, 50);
@@ -38,6 +44,7 @@ public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListe
 
         CTitle.setOnClickListener(MyHome.this);
         CDelete.setOnClickListener(MyHome.this);
+        CButton.setOnClickListener(MyHome.this);
         itemView.setOnClickListener(this);
 
 
@@ -65,6 +72,21 @@ public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListe
                 break;
                 default:
                     accion = "EditItem";
+            case R.id.ButtonEstado:
+                // Colores cambio de estado prueba 1 ;
+
+                if (CButton.getText().toString() == "Pendiente") {
+
+                    CButton.setTextColor(Color.parseColor("#FFD35F"));
+                    CButton.setText("Completado");
+                }
+                else
+                {
+                    CButton.setTextColor(Color.parseColor("#FC8A18"));
+                    CButton.setText("Pendiente");
+                }
+
+
 
         }
 
