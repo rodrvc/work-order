@@ -4,5 +4,6 @@
     <color name="colorSecondary">#D65E00</color>
     <color name="colorAccent">#FF9B1D</color>
     <color name="colorBlanco">#ffffff</color>
+    <color name="colorCompletada">#1F8F16</color>
 
 </resources>

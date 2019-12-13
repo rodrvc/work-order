@@ -241,6 +241,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                         order.setEstado("PENDIENTE");
                     adapter.notifyItemRemoved(position);
                     adapter.notifyItemRangeChanged(position, O.size());
+
                     Toast.makeText(this, "he" , Toast.LENGTH_LONG);
 
 

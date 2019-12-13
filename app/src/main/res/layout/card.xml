@@ -111,6 +111,7 @@
                     android:text="PENDIENTE"
                     android:textColor="@color/colorPrimary"
 
+
                     android:textColorLink="#FFC107" />
             </RelativeLayout>
 

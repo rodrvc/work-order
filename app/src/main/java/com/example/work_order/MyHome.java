@@ -2,6 +2,7 @@ package com.example.work_order;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.icu.text.CaseMap;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -55,43 +56,37 @@ public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListe
 
     @Override
     public void onClick(@NonNull View view) {
+
         String accion = "";
 
 
-
-
-        //Log.i("hola","este es un desde log" );
         switch (view.getId()){
             case R.id.card_title:
                 Log.i("hola","Titulo" );
                 //home.O.remove(getAdapterPosition());
                 accion = "apretarTitulo";
                 break;
+
+
             case R.id.card_delete:
                 accion = "borrarItem";
                 break;
-                default:
-                    accion = "EditItem";
+
+
+
             case R.id.ButtonEstado:
-                // Colores cambio de estado prueba 1 ;
+                // Colores cambio de estado prueba;
                 accion = "changeState";
 
-                if (CButton.getText().toString() == "PENDIENTE") {
 
-                    CButton.setTextColor(Color.parseColor("#FFD35F"));
-                    CButton.setText("En Curso");
-                }
-                else if (CButton.getText().toString() == "EN CURSO")
-                {
-                    CButton.setTextColor(Color.parseColor("#09C310"));
-                    CButton.setBackgroundColor(Color.parseColor("#09C310"));
-                    CButton.setText("COMPLETADA");
 
-                } else {
-                    CButton.setTextColor(Color.parseColor("#FC8A10"));
-                    CButton.setText("PENDIENTE");
 
-                }
+
+                break;
+
+            default:
+                accion = "EditItem";
+                break;
 
 
 
@@ -105,6 +100,7 @@ public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListe
 
 
     }
+
 
 
     public interface RecyListener {

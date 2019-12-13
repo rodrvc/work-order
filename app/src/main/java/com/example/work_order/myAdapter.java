@@ -1,6 +1,9 @@
 package com.example.work_order;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +45,6 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
     public MyHome onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(card, parent , false); //
         // this
-
         return new MyHome(view, recyListener);
     }
 
@@ -52,6 +54,36 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
         holder.CTitle.setText(order.get(position).getTitle());
         holder.CDescripcion.setText(order.get(position).getDescription());
         holder.CButton.setText(order.get(position).getEstado());
+
+        if (holder.CButton.getText().toString() == "PENDIENTE") {
+
+
+            holder.CButton.setText("En CURSO");
+        }
+        else if (holder.CButton.getText().toString() == "EN CURSO")
+        {
+            holder.CButton.setTextColor(Color.parseColor("#ffffff"));
+            holder.CButton.setBackgroundTintList(c.getResources().getColorStateList(R.color.colorCompletada));
+
+            holder.CButton.setText("COMPLETADA");
+
+
+        } else {
+
+            holder.CButton.setText("PENDIENTE");
+            holder.CButton.setTextColor(Color.parseColor("#EA4410"));
+
+
+        }
+
+        if(holder.CButton.getText().equals("COMPLETADA")){
+
+
+            holder.CButton.setBackgroundResource(R.drawable.colorsucefull);
+            //holder.CButton.setBackgroundDrawable(c.getResources().getDrawable(R.drawable.colorsucefull));
+            holder.CButton.setBackgroundColor(Color.GREEN);
+
+        }
 
 
 
@@ -67,8 +99,6 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
-
-
     }
 
 
@@ -78,7 +108,6 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
