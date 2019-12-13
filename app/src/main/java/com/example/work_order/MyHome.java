@@ -74,17 +74,25 @@ public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListe
                     accion = "EditItem";
             case R.id.ButtonEstado:
                 // Colores cambio de estado prueba 1 ;
+                accion = "changeState";
 
-                if (CButton.getText().toString() == "Pendiente") {
+                if (CButton.getText().toString() == "PENDIENTE") {
 
                     CButton.setTextColor(Color.parseColor("#FFD35F"));
-                    CButton.setText("Completado");
+                    CButton.setText("En Curso");
                 }
-                else
+                else if (CButton.getText().toString() == "EN CURSO")
                 {
-                    CButton.setTextColor(Color.parseColor("#FC8A18"));
-                    CButton.setText("Pendiente");
+                    CButton.setTextColor(Color.parseColor("#09C310"));
+                    CButton.setBackgroundColor(Color.parseColor("#09C310"));
+                    CButton.setText("COMPLETADA");
+
+                } else {
+                    CButton.setTextColor(Color.parseColor("#FC8A10"));
+                    CButton.setText("PENDIENTE");
+
                 }
+
 
 
 

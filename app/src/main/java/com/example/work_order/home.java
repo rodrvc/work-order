@@ -8,8 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.wifi.hotspot2.pps.HomeSp;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -80,7 +78,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         collapsingToolbar.setExpandedTitleMargin(130, 640 , 100 ,100);
         collapsingToolbar.setTitleEnabled(true);
 
-        collapsingToolbar.setTitle("Title");
+        collapsingToolbar.setTitle("MIS OTS");
 
 
 
@@ -134,12 +132,21 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
     }
 
     private void listarDatos() {
-        databaseReference.child("WK").child(idUsuario).orderByChild("title").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("WK").child(idUsuario).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 O.clear();
                 for (DataSnapshot ob : dataSnapshot.getChildren()) {
-                    OrdenDeTrabajo ot = ob.getValue(OrdenDeTrabajo.class);
+                    String  uid, title, description , idUsuario , estado;
+
+                    uid = ob.child("uid").getValue(String.class);
+                    title = ob.child("title").getValue(String.class);
+                    description = ob.child("description").getValue(String.class);
+                    idUsuario = ob.child("idUsuario").getValue(String.class);
+                    estado = ob.child("estado").getValue(String.class);
+
+
+                    OrdenDeTrabajo ot = new OrdenDeTrabajo(uid, title , description , idUsuario , estado);
 
                     O.add(ot);
 
@@ -195,12 +202,12 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
     @Override // encarga decibir el parametro click en el recyclerview
     public void recyClick(int position , String accion) {
-
+        OrdenDeTrabajo order ;
         if (accion == "apretarTitulo") {
             Toast.makeText(this, "Uted a precionado el titulo ", Toast.LENGTH_LONG).show();
         }else if (accion == "borrarItem"){
 
-            OrdenDeTrabajo order = O.get(position);
+            order = O.get(position);
 
             databaseReference.child("WK").child(idUsuario).child(order.getUid()).removeValue();
             O.remove(position);
@@ -208,9 +215,42 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
             adapter.notifyDataSetChanged();
             adapter.notifyItemRangeChanged(position, O.size());
             Toast.makeText(this, "Eliminado dato", Toast.LENGTH_LONG).show();
+
+
+
         } else if(accion == "EditItem"){
             OrdenDeTrabajo o = O.get(position);
             cambioFormEdit(o);
+
+
+
+        } else if(accion == "changeState"){
+            order = O.get(position);
+            switch (order.getEstado()) {
+                case "PENDIENTE":
+                    order.setEstado("EN CURSO");
+                    break;
+
+                case "COMPLETADA":
+                    order.setEstado("PENDIENTE");
+                    break;
+                case "EN CURSO":
+                    order.setEstado("COMPLETADA");
+                    break;
+                    default:
+                        order.setEstado("PENDIENTE");
+                    adapter.notifyItemRemoved(position);
+                    adapter.notifyItemRangeChanged(position, O.size());
+                    Toast.makeText(this, "he" , Toast.LENGTH_LONG);
+
+
+
+
+
+            }
+            databaseReference.child("WK").child(idUsuario).child(order.getUid()).child("estado").setValue(order.getEstado());
+
+
         }
     }
 
@@ -227,6 +267,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         String titulo = "";
         String description = "";
         String id = "";
+        String estado = "0";
 
         if (resultCode == RESULT_OK && requestCode == 1) {
             if (data.hasExtra("title")) {
@@ -261,6 +302,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                 ot.setUid(UUID.randomUUID().toString());
                 ot.setTitle(titulo);
                 ot.setDescription(descripcion);
+                ot.setEstado("Pendiente");
                 O.add(ot);
                 databaseReference.child("WK").child(idUsuario).child(ot.getUid()).setValue(ot);
             }
@@ -277,10 +319,13 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
                 databaseReference.child("WK").child(idUsuario).child(ot.getUid()).setValue(ot);
                 adapter.notifyDataSetChanged();
-                String hola = "hola";
+
             }
         }
     }
+
+
+
 
     public void signOut() {
         // [START auth_fui_signout]

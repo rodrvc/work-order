@@ -51,6 +51,7 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
 
         holder.CTitle.setText(order.get(position).getTitle());
         holder.CDescripcion.setText(order.get(position).getDescription());
+        holder.CButton.setText(order.get(position).getEstado());
 
 
 

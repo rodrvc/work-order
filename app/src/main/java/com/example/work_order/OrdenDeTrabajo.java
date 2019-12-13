@@ -3,18 +3,23 @@ package com.example.work_order;
 public class OrdenDeTrabajo {
 
 
-    private String uid, title, description , idUsuario;
+    private String uid, title, description , idUsuario , estado;
 
 
-    public OrdenDeTrabajo() {
-    }
 
-    public OrdenDeTrabajo(String uid, String title, String description, String idUsuario) {
+
+    public OrdenDeTrabajo(String uid, String title, String description, String idUsuario, String estado) {
         this.uid = uid;
         this.title = title;
         this.description = description;
         this.idUsuario = idUsuario;
+        this.estado = estado;
     }
+
+    public OrdenDeTrabajo() {
+
+    }
+
 
     public String getUid() {
         return uid;
@@ -47,4 +52,15 @@ public class OrdenDeTrabajo {
     public void setIdUsuario(String idUsuario) {
         this.idUsuario = idUsuario;
     }
+
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+
 }
