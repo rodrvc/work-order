@@ -1,10 +1,16 @@
 package com.example.work_order;
 
+import android.app.Service;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -38,12 +44,14 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
         this.order = order;
         this.recyListener = recyListener;
 
+
     }
 
     @NonNull
     @Override
     public MyHome onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(card, parent , false); //
+
         // this
         return new MyHome(view, recyListener);
     }
@@ -55,38 +63,28 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
         holder.CDescripcion.setText(order.get(position).getDescription());
         holder.CButton.setText(order.get(position).getEstado());
 
-        if (holder.CButton.getText().toString() == "PENDIENTE") {
+        Log.println(Log.ASSERT , "a", order.get(position).getEstado());
 
 
-            holder.CButton.setText("En CURSO");
-        }
-        else if (holder.CButton.getText().toString() == "EN CURSO")
-        {
-            holder.CButton.setTextColor(Color.parseColor("#ffffff"));
-            holder.CButton.setBackgroundTintList(c.getResources().getColorStateList(R.color.colorCompletada));
-
-            holder.CButton.setText("COMPLETADA");
 
 
-        } else {
-
-            holder.CButton.setText("PENDIENTE");
-            holder.CButton.setTextColor(Color.parseColor("#EA4410"));
-
-
-        }
 
         if(holder.CButton.getText().equals("COMPLETADA")){
-
-
-            holder.CButton.setBackgroundResource(R.drawable.colorsucefull);
+            holder.CButton.setTextColor(Color.parseColor("#4AC000"));
+            //holder.CButton.setBackgroundResource(R.drawable.colorsucefull);
             //holder.CButton.setBackgroundDrawable(c.getResources().getDrawable(R.drawable.colorsucefull));
             holder.CButton.setBackgroundColor(Color.GREEN);
+            //holder.CButton.setBackgroundTintList(c.getResources().getColorStateList(R.color.colorCompletada));
+
+
+
+            //MediaPlayer mp= MediaPlayer.create(c, R.raw.a );
+            //mp.start();
+        }
+        if (holder.CButton.getText().equals("PENDIENTE")){
+            holder.CButton.setTextColor(Color.parseColor("#C03700"));
 
         }
-
-
-
     }
 
 
@@ -99,6 +97,11 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
+    }
+
+    public void sound(){
+
+
     }
 
 

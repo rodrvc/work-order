@@ -71,6 +71,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         Toolbar toolbar =findViewById(R.id.Toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         toolbar.setTitle("WorkOrder");
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
@@ -115,6 +116,9 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         return true;
     }
 
+
+
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
@@ -125,15 +129,42 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                 startActivity(SingIntent);
                 finish();
                 return true;
+                default:
+                    onBackPressed();
 
 
         }
         return super.onOptionsItemSelected(item);
     }
 
+    boolean doubleBackToExitPressedOnce = false;
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Presiona nuevamente para salir", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
+    }
+
+
+
+
     private void listarDatos() {
         databaseReference.child("WK").child(idUsuario).addValueEventListener(new ValueEventListener() {
             @Override
+
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 O.clear();
                 for (DataSnapshot ob : dataSnapshot.getChildren()) {
@@ -183,12 +214,14 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         String descriptionTareaEditar = o.getDescription();
         String tituloTareaEditar = o.getTitle();
         String idEditar = o.getUid();
+        String estado = o.getEstado();
         String prueba = "prueba de string ";
 
                 Intent homeIntent = new Intent(home.this, EditarTarea.class);
                 homeIntent.putExtra("titleEdit", tituloTareaEditar);
                 homeIntent.putExtra("descriptionEdit" , descriptionTareaEditar);
                 homeIntent.putExtra("idEdit" , idEditar);
+                homeIntent.putExtra("estadoEdit" , estado);
                 startActivityForResult(homeIntent, 1);
     }
 
@@ -225,6 +258,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
 
         } else if(accion == "changeState"){
+            //Renderiza el estado de la tarea
             order = O.get(position);
             switch (order.getEstado()) {
                 case "PENDIENTE":
@@ -259,6 +293,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
 
     @Override
+    //se trae los datos de modificar
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -268,7 +303,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         String titulo = "";
         String description = "";
         String id = "";
-        String estado = "0";
+        String estado = "";
 
         if (resultCode == RESULT_OK && requestCode == 1) {
             if (data.hasExtra("title")) {
@@ -283,11 +318,14 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                 description = data.getExtras().getString("description");
             }
             //si tiene id;
+
+
+
             if (data.hasExtra("id")) {
-                Toast.makeText(this, data.getExtras().getString("id"),
-                        Toast.LENGTH_SHORT).show();
+
                 id = data.getExtras().getString("id");
-                comprobarModificar(titulo, description , id);
+                estado = data.getExtras().getString("estado");
+                comprobarModificar(titulo, description , id , estado);
                 return;
             }
         }
@@ -310,13 +348,14 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         }
     }
 
-    private void comprobarModificar(String titulo, String descripcion , String id) {
+    private void comprobarModificar(String titulo, String descripcion , String id ,String estado) {
 
         if (titulo != null || descripcion != null) {
             if (titulo != "" || descripcion != "") {
                 ot.setUid(id);
                 ot.setTitle(titulo);
                 ot.setDescription(descripcion);
+                ot.setEstado(estado);
 
                 databaseReference.child("WK").child(idUsuario).child(ot.getUid()).setValue(ot);
                 adapter.notifyDataSetChanged();

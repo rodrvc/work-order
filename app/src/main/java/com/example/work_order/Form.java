@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -37,9 +38,23 @@ public class Form extends AppCompatActivity {
 
     public void aceptarTarea(){
 
-        Bundle bundle = new Bundle();
+
         String title = txtTitle.getText().toString();
         String description = txtDescription.getText().toString();
+
+        if(title.trim().equals("") ){
+            txtTitle.requestFocus();
+            Toast.makeText(this , "Ingrese un titulo para su ot" , Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(description.trim().equals("") ){
+            txtDescription.requestFocus();
+            Toast.makeText(this , "Ingrese una descripcion su ot" , Toast.LENGTH_LONG).show();
+            return;
+        }
+
+
+
 
         Intent homeIntent = new Intent( );
         homeIntent.putExtra("title",title);
