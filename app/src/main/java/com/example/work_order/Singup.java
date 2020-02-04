@@ -2,30 +2,22 @@ package com.example.work_order;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
 import android.os.Bundle;
 
 import com.firebase.ui.auth.AuthUI;
 
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
-import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,12 +35,54 @@ public class Singup extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
 
+    FirebaseAuth a = User.obtenerAutentificacion();
+
+    public static FirebaseUser u;
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singup);
 
-        createSignInIntent();
+
+        u = a.getCurrentUser();
+
+        if (u != null ){
+
+
+          Intent intent = new Intent(getBaseContext(), home.class);
+            intent.putExtra("name", u.getDisplayName());
+            intent.putExtra("email", u.getEmail());
+            intent.putExtra("uid", u.getUid());
+
+            startActivity(intent);
+
+
+
+        }
+        else createSignInIntent();
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (u != null ){
+
+            Intent intent = new Intent(getBaseContext(), home.class);
+            intent.putExtra("name", u.getDisplayName());
+            intent.putExtra("email", u.getEmail());
+            intent.putExtra("uid", u.getUid());
+
+            startActivity(intent);
+        }
+
+
+
 
     }
 
@@ -71,6 +105,7 @@ public class Singup extends AppCompatActivity {
                         .build(),
                 RC_SIGN_IN);
         // [END auth_fui_create_intent]
+
     }
 
     // [START auth_fui_result]
@@ -78,56 +113,31 @@ public class Singup extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+
+
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
             Log.d(this.getClass().getName(), "this user signid in with" + response.getProviderType());
 
+            FirebaseUser usuarioInstancia = User.obtenerUsuario();
 
-
+            final User usuario = new User();
 
             if (resultCode == RESULT_OK) {
 
-                final User usuario = new User();
+
                 // Successfully signed in
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
 
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.default_web_client_id))
+                        .requestIdToken(getString(R.string.google_app_id))
 
                         .requestEmail()
                         .build();
 
 
-
-
-                //Obtener datos del usuario
-
-
-
-
-
-
-
-
-                    // Name, email address, and profile photo Url
-                    String name = user.getDisplayName();
-                    String email = user.getEmail();
-                    // Check if user's email is verified
-                    boolean emailVerified = user.isEmailVerified();
-                    // The user's ID, unique to the Firebase project. Do NOT use this value to
-                    // authenticate with your backend server, if you have one. Use
-                    // FirebaseUser.getIdToken() instead.
-                    final String uid = user.getUid();
-
-                    usuario.setUserId(uid);
-                    usuario.setNombre(name);
-                    usuario.setEmail(email);
-
-
-                    Intent intent = new Intent(getBaseContext(), home.class);
-                    intent.putExtra("name", name);
-                    intent.putExtra("email", email);
-                    intent.putExtra("uid", uid);
+                //Obtener datos del usuari
+                //o
 
 
 
@@ -135,22 +145,43 @@ public class Singup extends AppCompatActivity {
 
 
 
-                    startActivity(intent);
+                String uid = usuarioInstancia.getUid();
+                // Name, email address, and profile photo Url
+                String name =usuarioInstancia.getDisplayName();
+                String email = usuarioInstancia.getEmail();
+
+                // Check if user's email is verified
+                boolean emailVerified = usuarioInstancia.isEmailVerified();
+                // The user's ID, unique to the Firebase project. Do NOT use this value to
+                // authenticate with your backend server, if you have one. Use
+                // FirebaseUser.getIdToken() instead.
 
 
+                usuario.setUserId(uid);
+                usuario.setNombre(name);
+                usuario.setEmail(email);
+
+
+                Intent intent = new Intent(getBaseContext(), home.class);
+                intent.putExtra("name", name);
+                intent.putExtra("email", email);
+                intent.putExtra("uid", uid);
+
+
+                startActivity(intent);
 
 
                 databaseReference.child("usuario")
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                if(dataSnapshot == null){
+                                if (dataSnapshot == null) {
                                     // el nodo no tiene hijos
                                     databaseReference.child("usuario").child(usuario.getUserId()).setValue(usuario);
 
-                                }else{
+                                } else {
                                     //hacer algo con el valor
-                                   
+                                    databaseReference.child("usuario").child(usuario.getUserId()).setValue(usuario);
                                 }
 
                             }
@@ -166,31 +197,24 @@ public class Singup extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
                 // ...
             } else {
+
+                createSignInIntent();
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check
                 // response.getError().getErrorCode() and handle the error.
                 // ...
             }
         }
+
     }
     // [END auth_fui_result]
 
-    public void signOut() {
+    public  void signOut() {
         // [START auth_fui_signout]
+
+
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -241,5 +265,13 @@ public class Singup extends AppCompatActivity {
                         .build(),
                 RC_SIGN_IN);
         // [END auth_fui_pp_tos]
+    }
+
+
+    public static void salir(){
+        FirebaseAuth.getInstance().signOut();
+        User.salirSession();
+
+
     }
 }

@@ -52,6 +52,7 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
     public MyHome onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(card, parent , false); //
 
+
         // this
         return new MyHome(view, recyListener);
     }
@@ -73,7 +74,7 @@ public class myAdapter extends RecyclerView.Adapter<MyHome> {
             holder.CButton.setTextColor(Color.parseColor("#4AC000"));
             //holder.CButton.setBackgroundResource(R.drawable.colorsucefull);
             //holder.CButton.setBackgroundDrawable(c.getResources().getDrawable(R.drawable.colorsucefull));
-            holder.CButton.setBackgroundColor(Color.GREEN);
+            //holder.CButton.setBackgroundColor(Color.GREEN);
             //holder.CButton.setBackgroundTintList(c.getResources().getColorStateList(R.color.colorCompletada));
 
 

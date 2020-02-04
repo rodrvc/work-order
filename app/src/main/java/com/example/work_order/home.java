@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,13 +36,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class home extends AppCompatActivity implements MyHome.RecyListener {
     private TextView tx;
 
     RecyclerView recycler;
-
+    private static final int RC_SIGN_IN = 123;
 
     myAdapter adapter;
     public static ArrayList<OrdenDeTrabajo> O = new ArrayList<>();
@@ -48,9 +53,28 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     DatabaseReference rf = databaseReference.child("texto");
 
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-    String idUsuario  = user.getUid();
+
+
+    private void runLayoutAnimation(final RecyclerView recyclerView) {
+        final Context context = recyclerView.getContext();
+        final LayoutAnimationController controller =
+                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
+
+                recyclerView.setLayoutAnimation(controller);
+                recyclerView.getAdapter().notifyDataSetChanged();
+                recyclerView.scheduleLayoutAnimation();
+    }
+
+
+    public static FirebaseAuth u = User.obtenerAutentificacion();
+    public static FirebaseUser user = u.getCurrentUser();
+
+
+
+    String idUsuario ;
+
+
 
 
 
@@ -66,6 +90,8 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        idUsuario = getIntent().getStringExtra("uid");
+
         //INICIALIZACION DE COMPONENTES
         final FloatingActionButton fab = findViewById(R.id.fab);
         Toolbar toolbar =findViewById(R.id.Toolbar);
@@ -80,10 +106,6 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         collapsingToolbar.setTitleEnabled(true);
 
         collapsingToolbar.setTitle("MIS OTS");
-
-
-
-
 
         //iniciar firebase
         inicializarFirebase();
@@ -104,10 +126,11 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         });
         listarDatos();
 
-
-
-
     }
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -122,6 +145,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
+            //icono toolbar
             case R.id.cerrar:
                 Toast.makeText(this ,"Cerrando Sesion " ,Toast.LENGTH_LONG).show();
                 signOut();
@@ -129,6 +153,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                 startActivity(SingIntent);
                 finish();
                 return true;
+
                 default:
                     onBackPressed();
 
@@ -141,6 +166,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
     @Override
     public void onBackPressed() {
+        runLayoutAnimation(recycler);
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
             return;
@@ -222,11 +248,14 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                 homeIntent.putExtra("descriptionEdit" , descriptionTareaEditar);
                 homeIntent.putExtra("idEdit" , idEditar);
                 homeIntent.putExtra("estadoEdit" , estado);
+
+
                 startActivityForResult(homeIntent, 1);
+        runLayoutAnimation(recycler);
     }
 
     private void inicializarFirebase(){
-        FirebaseApp.initializeApp(this);
+
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
     }
@@ -248,6 +277,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
             adapter.notifyDataSetChanged();
             adapter.notifyItemRangeChanged(position, O.size());
             Toast.makeText(this, "Eliminado dato", Toast.LENGTH_LONG).show();
+
 
 
 
@@ -274,20 +304,20 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                     default:
                         order.setEstado("PENDIENTE");
                     adapter.notifyItemRemoved(position);
-                    adapter.notifyItemRangeChanged(position, O.size());
+                    //adapter.notifyItemRangeChanged(position, O.size()); // Verificando utilizdad
 
-                    Toast.makeText(this, "he" , Toast.LENGTH_LONG);
-
-
-
-
-
+                    Toast.makeText(this, "nueva tarea" , Toast.LENGTH_LONG);
             }
+
+
             databaseReference.child("WK").child(idUsuario).child(order.getUid()).child("estado").setValue(order.getEstado());
 
 
         }
     }
+
+
+
 
 
 
@@ -346,6 +376,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
                 databaseReference.child("WK").child(idUsuario).child(ot.getUid()).setValue(ot);
             }
         }
+        runLayoutAnimation(recycler);
     }
 
     private void comprobarModificar(String titulo, String descripcion , String id ,String estado) {
@@ -359,7 +390,7 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
                 databaseReference.child("WK").child(idUsuario).child(ot.getUid()).setValue(ot);
                 adapter.notifyDataSetChanged();
-
+                runLayoutAnimation(recycler);
             }
         }
     }
@@ -367,16 +398,60 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
 
 
 
+
+
     public void signOut() {
         // [START auth_fui_signout]
+
+        FirebaseAuth.getInstance().signOut();
+
         AuthUI.getInstance()
                 .signOut(this)
+
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     public void onComplete(@NonNull Task<Void> task) {
-                        // ...
+                        User us = new User();
+                        us.salir();
+                        User.salirSession();
+                        FirebaseAuth.getInstance().signOut();
+                        u.signOut();
+                        Singup.salir();
+
+                        //home.super.onDestroy();
+
+                        Intent intent = new Intent(getBaseContext(), Singup.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+
+
+
                     }
                 });
+
+        User us = new User();
+        us.salir();
+        User.salirSession();
+        FirebaseAuth.getInstance().signOut();
+        u.signOut();
+        Singup.salir();
+        createSignInIntent();
+
+
+
+        //home.super.onDestroy();
+
+
+
+
+
+        Intent intent = new Intent(getBaseContext(), Singup.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
         // [END auth_fui_signout]
+
     }
 
 
@@ -427,6 +502,28 @@ public class home extends AppCompatActivity implements MyHome.RecyListener {
         //description= bundle.getString("description");
 
         return description;
+    }
+
+
+    public void createSignInIntent() {
+        // [START auth_fui_create_intent]
+        // Choose authentication providers
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build(),
+                new AuthUI.IdpConfig.PhoneBuilder().build(),
+                new AuthUI.IdpConfig.GoogleBuilder().build()
+        );
+
+        // Create and launch sign-in intent
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setLogo(R.drawable.estadistica)
+
+                        .build(),
+                RC_SIGN_IN);
+        // [END auth_fui_create_intent]
     }
 
 }

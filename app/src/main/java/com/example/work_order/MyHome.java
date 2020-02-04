@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,7 +51,7 @@ public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListe
 
 
         setAnimation(this.itemView, getAdapterPosition());
-
+        
 
     }
 
@@ -88,15 +89,10 @@ public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListe
                 break;
 
 
-
-
         }
 
 
         recyLister.recyClick(getAdapterPosition(), accion);
-
-
-
 
     }
 
@@ -116,4 +112,6 @@ public class MyHome extends RecyclerView.ViewHolder implements View.OnClickListe
             lastPosition = position;
         }
     }
+
+
 }
